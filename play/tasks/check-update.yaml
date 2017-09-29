@@ -1,0 +1,19 @@
+---
+  - name: install yum security update plugin
+    yum:
+       name: yum-plugin-security
+       state: present
+    become: true
+
+  - name: check updates
+    shell: yum --security check-update > /tmp/yum_updates
+    ignore_errors: yes     
+    become: true
+
+  - name: fetch files
+    fetch:
+        src: /tmp/yum_updates
+        dest: /tmp/check-updates/{{ inventory_hostname }}
+        flat: yes
+    become: true
+...

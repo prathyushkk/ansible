@@ -1,0 +1,12 @@
+---
+- hosts: ansitest
+  vars:
+  vars_files:
+     - tasks/vars.yaml
+  remote_user: ec2-user
+  tasks:
+          - import_tasks: tasks/create-snapshots.yaml
+          - import_tasks: tasks/check-update.yaml
+          - import_tasks: tasks/install_sec_updates.yaml
+          - import_tasks: tasks/reboot.yaml
+...

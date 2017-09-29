@@ -1,0 +1,17 @@
+#aws ec2 describe-instances --region ap-southeast-2 --query 'Reservations[].Instances[].{Name:Tags[?Key==`Name`].Value, IP:PrivateIpAddress, OS:Platform}'| tr -d "['" | tr -d "']" |tr '[:upper:]' '[:lower:]'| grep -v windows |awk ' { t = $1; $1 = $2; $2 = t; print $1"\tansible_host="$2; } '|grep -v none | grep -i data |sort -k1
+[loyalty-hosts]
+data-dev-ci-pk	ansible_host=10.26.1.29
+pub-data-haproxy-a	ansible_host=10.26.3.6
+
+[dev-hosts]
+data-dev-1-actions	ansible_host=10.26.0.209
+
+[test-hosts]
+data-test-sftp-internal	ansible_host=10.26.3.206
+
+[other-hosts]
+data-ops-bastion	ansible_host=10.26.0.246
+pub-data-haproxy-a	ansible_host=10.26.3.6
+
+[ansitest]
+data-test-cltra-old	ansible_host=10.26.3.214 ansible_user=root

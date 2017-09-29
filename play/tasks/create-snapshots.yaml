@@ -1,0 +1,26 @@
+---
+  - name: get the instance id
+    command: aws ec2 describe-instances --filter Name=private-ip-address,Values={{ ansible_host }} --query 'Reservations[].Instances[].InstanceId' --output=text
+    delegate_to: 127.0.0.1
+    register: instanceid
+  - debug:
+       var: instanceid.stdout
+
+  - name: get the volumes of the instance
+    command: aws ec2 describe-volumes --filters Name=attachment.instance-id,Values={{ instanceid.stdout }} --query 'Volumes[*].VolumeId[]' --output=text
+    delegate_to: 127.0.0.1
+    register: volumes
+  - debug:
+       var: volumes.stdout
+
+  - name: show the volumes
+    debug: 
+       msg: "{{ item }}"
+    with_items: "{{ volumes.stdout.split('\t') }}"
+    delegate_to: 127.0.0.1
+
+  - name: create the snapshot
+    command: aws ec2 create-snapshot --volume-id "{{ item }}" --description "snapshot before patching"
+    with_items: "{{ volumes.stdout.split('\t') }}"
+    delegate_to: 127.0.0.1
+...

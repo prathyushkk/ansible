@@ -1,0 +1,8 @@
+---
+- hosts: ansitest
+  vars:
+  vars_files:
+     - tasks/vars.yaml
+  tasks:
+          - import_tasks: tasks/reboot.yaml
+...

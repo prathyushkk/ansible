@@ -1,0 +1,28 @@
+---
+    # Send the reboot command
+    - name: Reboot the host
+      shell: shutdown -r now
+      become: true
+
+    # This pause is mandatory, otherwise the existing control connection gets reused!
+    - pause: seconds=30
+
+    # Now we will run a local 'ansible -m ping' on this host until it returns.
+    # This works with the existing ansible hosts inventory and so any custom ansible_ssh_hosts definitions are being used
+    - name: Waiting for the system
+      shell: ansible -m ping {{ inventory_hostname }}
+      register: result
+      until: result.stdout.find('pong') == 93
+      retries: 30
+      delay: 10
+      delegate_to: 127.0.0.1
+      ignore_errors: yes
+
+    # And finally, execute 'uptime' when the host is back.
+    - name: Check Uptime
+      shell: uptime
+      register: uptime
+
+    - debug:
+         msg: "{{ uptime.stdout }}"
+...

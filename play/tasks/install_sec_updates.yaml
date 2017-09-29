@@ -1,0 +1,8 @@
+---
+   - name: install security updates
+     yum:
+         name: '*'
+         state: latest
+         security: yes
+     become: true
+...
